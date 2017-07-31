@@ -33,21 +33,21 @@ fnum = 0;
 numVal = round(settings.valProp*numExamples/settings.examplesPerImage);
 for ex = 1:numVal
     
-    imNum = randi(rs, (numExamples-fnum)/settings.examplesPerImage);
+    imNum = randi(rs, (numExamples/settings.examplesPerImage)-fnum);
     startInd = (imNum-1)*settings.examplesPerImage+1;
-    endInd = startInd+settings.examplesPerImage;
+    endInd = startInd+settings.examplesPerImage-1;
     inds = indices(startInd:endInd);
     indices(startInd:endInd) = [];
     
     fnum=fnum+1;
-    fname = [settings.testDataDir sprintf('\\samediff_valdat_%d.csv',fnum)];
+    fname = [settings.trainDataDir sprintf('\\samediff_valdat_%d.csv',fnum)];
     if exist(fname,'file')
         fprintf('Found file %s, skipping...\n',fname);
         continue;
     end
     example = tallTraindat(inds,1:exampleLen);
     example = gather(example);
-    example(2:end) = example(2:end) - horzcat(meanVec,meanVec);
+    example(:,2:end) = example(:,2:end) - horzcat(meanVec,meanVec);
     csvwrite(fname,example);
 end
 
@@ -56,7 +56,7 @@ shuffling = indices(randperm(rs,length(indices)));
 fnum = 0;
 for ex = 1:exPerFile:numExamples
     fnum=fnum+1;
-    fname = [settings.saveDir sprintf('\\samediff_traindat_%d.csv',fnum)];
+    fname = [settings.trainDataDir sprintf('\\samediff_traindat_%d.csv',fnum)];
     
     if exist(fname,'file')
         fprintf('Found file %s, skipping...\n',fname);
