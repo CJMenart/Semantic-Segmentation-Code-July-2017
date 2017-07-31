@@ -109,7 +109,7 @@ class MyCSVReader:
 		
 		'''we pop filenames out of self.filenames instead of curFilenames because these files
 		are being permanently reserved.'''
-		while len(self.reserve) < reserveSize:
+		while self.filenames and len(self.reserve) < reserveSize:
 			fname = self.filenames.pop(random.randint(0,len(self.filenames)-1))
 			print(fname)
 			f = open(fname, 'r')
