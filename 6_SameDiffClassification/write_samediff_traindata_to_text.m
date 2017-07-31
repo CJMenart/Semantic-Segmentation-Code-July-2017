@@ -54,7 +54,7 @@ end
 shuffling = indices(randperm(rs,length(indices)));
 
 fnum = 0;
-for ex = 1:exPerFile:numExamples
+for ex = 1:settings.examplesPerFile:numExamples
     fnum=fnum+1;
     fname = [settings.trainDataDir sprintf('\\samediff_traindat_%d.csv',fnum)];
     
@@ -66,7 +66,8 @@ for ex = 1:exPerFile:numExamples
     inds = shuffling(ex:min(ex+settings.examplesPerFile-1, numExamples));
     inds = sort(inds);
     example = tallTraindat(inds,1:exampleLen);
-    example(2:end) = example(2:end) - horzcat(meanVec,meanVec);
+    example = gather(example);
+    example(:,2:end) = example(:,2:end) - horzcat(meanVec,meanVec);
     
-    csvwrite(fname,gather(example));
+    csvwrite(fname,example);
 end
