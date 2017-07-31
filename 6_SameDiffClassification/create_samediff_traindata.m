@@ -9,7 +9,7 @@ function ds = create_samediff_traindata(DatasetHomeDir,ModelSubDir,settings)
 %Settings
 split = settings.split;
 ProbSubDir = strcat(ModelSubDir,'Prob/');
-HCSubDir = strcat(ModelSubDir, 'HC/');
+HCSubDir = 'HC/';
 if strcmp(split,'test')
     ImDir = strcat(DatasetHomeDir,'TestImgs/');
 else
@@ -42,24 +42,25 @@ switch(split)
 end
 
 display('Loading ground truth');
-fname = strcat(DatasetHomeDir,split,sprintf('_spGT_%04d',spVersion));
+fname = strcat(DatasetHomeDir,split,sprintf('_spGT_%04d',settings.spVersion));
 spGT = load(fname); %split_spGT
 f = fieldnames(spGT);
 spGT = spGT.(f{1});
 
 display('Loading ''Best Softmax''');
-fname = strcat(DatasetHomeDir,ModelSubDir,split,sprintf('_spMaxProb_%04d',spVersion));
+fname = strcat(DatasetHomeDir,ModelSubDir,split,sprintf('_spMaxProb_%04d',settings.spVersion));
 spMaxProb = load(fname);
 f = fieldnames(spMaxProb);
 spMaxProb = spMaxProb.(f{1});
 
-if (show)
-    display('Loading segmentations');
-    fname = strcat(DatasetHomeDir,split,sprintf('_spIm_%04d',spVersion));
-    spIm = load(fname); %split_spIm
-    f = fieldnames(spIm);
-    spIm = spIm.(f{1});
-    
+
+display('Loading segmentations');
+fname = strcat(DatasetHomeDir,split,sprintf('_spIm_%04d',settings.spVersion));
+spIm = load(fname); %split_spIm
+f = fieldnames(spIm);
+spIm = spIm.(f{1});
+
+if (settings.show)
     figA = figure;
 end
 
@@ -74,7 +75,7 @@ for ImgNum = imRange
     fname = strcat(DatasetHomeDir, HCSubDir, split, sprintf('_%06d_hc_%04d.mat',ImgNum,settings.spVersion));  
     load(fname); %loads 'spHC'
     
-    if show
+    if settings.show
         img = imread(ImDir,split,sprintf('_img_%06d',ImgNum));
         trainingExamples = select_local_samediff_examples(spIm{ImgNum},origBestClass,spGT{ImgNum},spHC,numClasses,settings,img,figA);
     else
@@ -86,7 +87,7 @@ for ImgNum = imRange
     if size(trainingExamplesAccumulated,1)> 100000 || ImgNum == imRange(end)
         %save hypercolumns as tall file
         tallEx = tall(trainingExamplesAccumulated);
-        fname = [DatasetHomeDir TrainingExampleSubDir split '_' num2str(ImgNum,'%06d') '_examples'];
+        fname = [settings.trainExampleDir split '_' num2str(ImgNum,'%06d') '_examples'];
         write(fname,tallEx);
         folderNames{ImgNum} = fname;
         trainingExamplesAccumulated = [];

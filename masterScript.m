@@ -10,15 +10,15 @@ clear all; close all;
 
 % where to read original data
 %----------------------------
-InputRepositoryDir = 'D:\Computer Vision\SiftFlow\';
+InputRepositoryDir = 'C:\Users\christophermenart\Documents\cjmenart cv\';
 
 % where to store processed data
 %------------------------------
-DatasetHomeDir = 'C:\Users\Christopher\Documents\Computer Vision Overflow\SIFT-Flow\';
+DatasetHomeDir = 'C:\Users\christophermenart\Documents\cjmenart cv\Semantic Segmentation 2017\SIFT-Flow\';
 
 % add path for matconvnet
 %------------------------------
-MatconvnetDir = 'D:\Computer Vision\vlfeat-matconvnet-bec6006\matlab\';
+MatconvnetDir = 'C:\Users\christophermenart\Documents\cjmenart cv\';
 addpath(MatconvnetDir);
 
 
@@ -62,7 +62,7 @@ sameDiffSettings.show = false;
 sameDiffSettings.valProp = 0.05;
 sameDiffSettings.spVersion = desiredNumSP;
 sameDiffSettings.split = 'train';
-sameDiffSettings.directToText = true;
+sameDiffSettings.directToText = false;
 
 showStage6=true;
 %----------------------------------
