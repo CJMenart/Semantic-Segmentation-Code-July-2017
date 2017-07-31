@@ -51,7 +51,8 @@ def sameDiffTraining(checkpointDir,dataDir,trainBasename,valBasename,numExamples
 
 	#Open training data and randomly pull out some as a validation set
 	reader = myCSVReader.MyCSVReader(dataDir,trainBasename,True)
-	valReader = myCSVReader.MyCSVReader(dataDir,valBasename,True,reserveSize=int('inf'))
+    #numExamples should be at least as great as the number of val examples
+	valReader = myCSVReader.MyCSVReader(dataDir,valBasename,True,reserveSize=numExamples)
 	valTarget, val1, val2 = valReader.get_reserve()
 	
 	tf.reset_default_graph()
