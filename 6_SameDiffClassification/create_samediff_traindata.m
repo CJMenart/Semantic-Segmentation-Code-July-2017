@@ -94,7 +94,7 @@ for ImgNum = imRange
     end
 end
     
-ds = datastore(folderNames);
+ds = datastore(folderNames,'Type','tall');
 save([DatasetHomeDir,settings.trainExampleDir,'trainingExampleDatastore'],'ds');
 
 if (show)

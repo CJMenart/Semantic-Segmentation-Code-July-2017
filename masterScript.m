@@ -63,8 +63,6 @@ sameDiffSettings.valProp = 0.05;
 sameDiffSettings.spVersion = desiredNumSP;
 sameDiffSettings.split = 'train';
 sameDiffSettings.directToText = false;
-
-showStage6=true;
 %----------------------------------
 
 % Stage 7 settings
