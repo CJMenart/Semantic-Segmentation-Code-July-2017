@@ -7,9 +7,6 @@ function [] = write_samediff_traindata_to_text(datastore,settings)
 % iterates through.
 % Dependencies: MATLAB 2017a (for tall-array functionality)
 
-%settings
-exPerFile = 1000; %this is bigger than actual batchsize to save time
-
 %load
 tallTraindat = tall(datastore);
 sz = size(tallTraindat);
@@ -23,7 +20,7 @@ indices = 1:numExamples;
 meanVec = mean(tallTraindat,1);
 meanVec = gather(meanVec);
 meanVec = meanVec(2:end);
-meanVec = (meanVec(1:length(meanVec)/2)+meanVec(length(meanVec)+1:end))/2;
+meanVec = (meanVec(1:length(meanVec)/2)+meanVec(length(meanVec)/2+1:end))/2;
 save([settings.sameDiffDir 'meanVec'],'meanVec');
 
 %deterministic randomstream in case the process crashes halfway through...
@@ -33,12 +30,12 @@ rs = RandStream('mt19937ar','Seed',1492);
 %TODO: Actually write this, and possibly move all your classification
 %settings into a settings struct.
 fnum = 0;
-numVal = round(settings.valProp*numExamples/settings.examplesPerIm);
+numVal = round(settings.valProp*numExamples/settings.examplesPerImage);
 for ex = 1:numVal
     
-    imNum = randi(rs, (numExamples-fnum)/settings.examplesPerIm);
-    startInd = (imNum-1)*settings.examplesPerIm+1;
-    endInd = startInd+settings.examplesPerIm;
+    imNum = randi(rs, (numExamples-fnum)/settings.examplesPerImage);
+    startInd = (imNum-1)*settings.examplesPerImage+1;
+    endInd = startInd+settings.examplesPerImage;
     inds = indices(startInd:endInd);
     indices(startInd:endInd) = [];
     
@@ -49,8 +46,9 @@ for ex = 1:numVal
         continue;
     end
     example = tallTraindat(inds,1:exampleLen);
+    example = gather(example);
     example(2:end) = example(2:end) - horzcat(meanVec,meanVec);
-    csvwrite(fname,gather(example));
+    csvwrite(fname,example);
 end
 
 shuffling = indices(randperm(rs,length(indices)));
@@ -65,7 +63,7 @@ for ex = 1:exPerFile:numExamples
         continue;
     end
     
-    inds = shuffling(ex:min(ex+exPerFile-1, numExamples));
+    inds = shuffling(ex:min(ex+settings.examplesPerFile-1, numExamples));
     inds = sort(inds);
     example = tallTraindat(inds,1:exampleLen);
     example(2:end) = example(2:end) - horzcat(meanVec,meanVec);
