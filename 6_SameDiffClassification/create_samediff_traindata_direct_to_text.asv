@@ -1,0 +1,139 @@
+function ds = create_samediff_traindata_direct_to_text(DatasetHomeDir,ModelSubDir,spVersion,examplesPerImage,show)
+% Read up the hypercolumns, labelings and ground-truth segmentations for a
+% training dataset, and save out the pairwise examples needed to train a
+% classifier on whether segments are the same or a different class. Saves
+% everything as a datastore that you can read into memory using a tall
+% array.
+% WARNING: Has not been tested since updating filenames and whatnot
+%This version of the code goes directly to text csv files. This may reduce
+%accuracy, especially if the amount of pooling in the later part of
+%training is low, and it requires you to read all the hypercolumns to find
+%the mean of training data. But it avoids having to touch parallel pool in
+%case you're having some issues with that.
+
+%TODO: Write
+
+%Settings
+if ~exist('examplesPerImage','var')
+    examplesPerImage = 500;
+end
+split = 'val';
+numSameEx = floor(examplesPerImage/2);
+numDiffEx = examplesPerImage-numSameEx;
+ProbSubDir = strcat(ModelSubDir,'Prob/');
+HCSubDir = strcat(ModelSubDir, 'HC/');
+if strcmp(split,'test')
+    ImDir = strcat(DatasetHomeDir,'TestImgs/');
+else
+    ImDir = strcat(DatasetHomeDir,'TrainImgs/');
+end
+
+if ~exist('show','var')
+    show=false;
+end
+
+%LOAD
+%-----------------------------
+display('Loading metadata');
+fname = strcat(DatasetHomeDir,'metaData.mat');
+load(fname); % loads metaData
+numTraining = metaData.numTrain;
+numTesting = metaData.numTest;
+numClasses = metaData.numClasses;
+whichTrainAreVal = metaData.whichTrainAreVal;
+
+switch(split)
+    case 'train'
+        numIms = numTraining;
+        imRange = 1:numTraining;
+    case 'test'
+        numIms = numTesting;
+        imRange = 1:numTesting;
+    case 'val' %val is a subset of train
+        numIms = length(whichTrainAreVal);
+        imRange = whichTrainAreVal;
+        split = 'train';
+    otherwise
+        error('Unrecognized split!');
+end
+
+display('Loading ground truth');
+fname = strcat(DatasetHomeDir,split,sprintf('_spGT_%04d',spVersion));
+spGT = load(fname); %split_spGT
+f = fieldnames(spGT);
+spGT = spGT.(f{1});
+
+display('Loading ''Best Softmax''');
+fname = strcat(DatasetHomeDir,ModelSubDir,split,sprintf('_spMaxProb_%04d',spVersion));
+spMaxProb = load(fname);
+f = fieldnames(spMaxProb);
+spMaxProb = spMaxProb.(f{1});
+
+if (show)
+    display('Loading segmentations');
+    fname = strcat(DatasetHomeDir,split,sprintf('_spIm_%04d',spVersion));
+    spIm = load(fname); %split_spIm
+    f = fieldnames(spIm);
+    spIm = spIm.(f{1});
+    
+    figA = figure;
+end
+
+%-----------------------------
+%compute and save data mean
+fprintf('Computing Mean Hypercolumn\n');
+meanVec = [];
+
+for ImgNum = imRange
+    
+fname = strcat(DatasetHomeDir, HCSubDir, split, sprintf('_%06d_hc_%04d.mat',ImgNum,spVersion));  
+load(fname); %loads 'spHC'
+
+if isempty(meanVec)
+    meanVec = mean(spHC,1); 
+else
+    meanVec = meanVec + mean(spHC,1);
+end
+end
+
+meanVec = meanVec./length(imRange);
+save([sameDiffDir 'meanVec'],'meanVec');
+%-----------------------------
+
+shuffled = imRange(randperm(length(imRange)));
+valInds = shuffled(1:round(valProp*length(imRange)));
+trainNum = 0;
+valNum = 0;
+
+for ImgNum = imRange
+
+    origBestClass = spMaxProb{ImgNum};
+    
+    fname = strcat(DatasetHomeDir, HCSubDir, split, sprintf('_%06d_hc_%04d.mat',ImgNum,spVersion));  
+    load(fname); %loads 'spHC'
+    
+    if show
+        img = imread(ImDir,split,sprintf('_img_%06d',ImgNum));
+        trainingExamples = select_local_samediff_examples(spIm{ImgNum},origBestClass,spGT{ImgNum},spHC,numClasses,examplesPerImage,img,figA);
+    else
+        trainingExamples = select_local_samediff_examples(spIm{ImgNum},origBestClass,spGT{ImgNum},spHC,numClasses,examplesPerImage);
+    end
+    
+    trainingExamples(:,2:end) = trainingExamples(:,2:end) - repmat(meanVec,examplesPerImage,2);
+    
+    if ismember(ImgNum,valInds)
+        valNum=valNum+1;
+        fname = [saveDir sprintf('\\samediff_valdat_%d.csv',valNum)];
+    else
+        trainNum=trainNum+1;
+        fname = [saveDir sprintf('\\samediff_traindat_%d.csv',trainNum)];
+    end
+    csvwrite(fname,trainingExamples);
+end
+    
+if (show)
+    close figA;
+end
+fprintf('Done creating training examples\n.');
+
+end
