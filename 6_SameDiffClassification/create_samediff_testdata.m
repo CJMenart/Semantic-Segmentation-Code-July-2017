@@ -8,7 +8,7 @@ function create_samediff_testdata(DatasetHomeDir,ModelSubDir,settings)
 % this when reading the answers as well as writing data.
 
 %Settings
-split = settings.split;
+split = 'test';
 ProbSubDir = strcat(ModelSubDir,'Prob/');
 HCDir = strcat(DatasetHomeDir, 'HC/');
 
@@ -52,7 +52,14 @@ for ImgNum = 1:numIms
 
     fname = strcat(HCDir, split, sprintf('_%06d_hc_%04d.mat',ImgNum,settings.spVersion));  
     load(fname); %loads 'spHC'
-        
+
+    %where data will be saved.
+    fname = [settings.testDataDir 'samediff_testdat_' num2str(ImgNum,'%06d') '.csv'];
+    if exist(fname,'file')
+        fprintf('Found file %s already, skippping...\n',fname);
+        continue;
+    end
+    
     testingExamples = zeros(0,'single');
     adjacencies = neighbors_from_segmentation(spIm{ImgNum},settings.neighborhoodRadius);
     clear exampleIndices;
@@ -67,7 +74,6 @@ for ImgNum = 1:numIms
     testingExamples(:,2:end) = testingExamples(:,2:end) - repmat(meanVec,numExamples,2);
     
     %save hypercolumns
-    fname = [settings.testDataDir 'samediff_testdat_' num2str(ImgNum,'%06d') '.csv'];
     csvwrite(fname,testingExamples);
 end
     

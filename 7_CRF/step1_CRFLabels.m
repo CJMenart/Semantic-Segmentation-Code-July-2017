@@ -1,8 +1,5 @@
 function [] = step1_CRFLabels(DatasetHomeDir,ModelSubDir,spVersion,lambda,neighborhoodRadius)
 
-if ~exist('radius','var')
-    neighborhoodRadius = 1;
-end
 
 SameDiffSubDir = strcat(DatasetHomeDir,ModelSubDir,sprintf('SameDiffClassification_%04d/',spVersion));
 TestingExampleSubDir = strcat(SameDiffSubDir,'Test Image Pairs/');

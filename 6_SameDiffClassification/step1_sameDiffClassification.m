@@ -89,7 +89,7 @@ if ~progress.isTestingDone
 end
 
 %optional: display the connections
-if show
+if settings.show
     display_samediff_testdata(DatasetHomeDir,ModelSubDir,settings);
 end
     

@@ -58,7 +58,7 @@ sameDiffSettings.trainExampleDir = strcat(sameDiffSettings.sameDiffDir,'Training
 sameDiffSettings.trainDataDir = strcat(sameDiffSettings.sameDiffDir,'Training Examples in CSV Format/');
 sameDiffSettings.checkpointDir = strcat(sameDiffSettings.sameDiffDir,'Network Checkpoints/');
 sameDiffSettings.testDataDir = strcat(sameDiffSettings.sameDiffDir,'Test Image Pairs/');
-sameDiffSettings.show = false;
+sameDiffSettings.show = true;
 sameDiffSettings.valProp = 0.05;
 sameDiffSettings.spVersion = desiredNumSP;
 sameDiffSettings.split = 'train';
@@ -66,10 +66,10 @@ sameDiffSettings.directToText = true;
 %----------------------------------
 
 % Stage 7 settings
-lambda = 0.1;
+lambda = 0.2;
 
 % --------------------------------
-DO_STAGES = [ 6 ]; % must do in order the first time! Then do (6),(7) for outside probabilities
+DO_STAGES = [ 6:8 ]; % must do in order the first time! Then do (6),(7) for outside probabilities
 
 %--------------------------------------
 %--------------------------------------
@@ -240,7 +240,7 @@ end
 if(ismember(7,DO_STAGES))
    display('*********** CRF LABELING **************');
    step0_reshapeMappedProbs(DatasetHomeDir,ModelSubDir,desiredNumSP);
-   step1_CRFLabels(DatasetHomeDir,ModelSubDir,desiredNumSP,lambda,samediffNeighborhoodRadius);
+   step1_CRFLabels(DatasetHomeDir,ModelSubDir,desiredNumSP,lambda,sameDiffSettings.neighborhoodRadius);
 end
 
 %---------------------------------------
