@@ -10,15 +10,15 @@ clear all; close all;
 
 % where to read original data
 %----------------------------
-InputRepositoryDir = 'C:\Users\christophermenart\Documents\cjmenart cv\';
+InputRepositoryDir = 'C:\Users\Christopher\Documents\Computer Vision Overflow\SIFT-Flow\';
 
 % where to store processed data
 %------------------------------
-DatasetHomeDir = 'C:\Users\christophermenart\Documents\cjmenart cv\Semantic Segmentation 2017\SIFT-Flow\';
+DatasetHomeDir = 'C:\Users\Christopher\Documents\Computer Vision Overflow\SIFT-Flow\';
 
 % add path for matconvnet
 %------------------------------
-MatconvnetDir = 'C:\Users\christophermenart\Documents\cjmenart cv\';
+MatconvnetDir = 'C:\Users\Christopher\Documents\Computer Vision Overflow\SIFT-Flow\';
 addpath(MatconvnetDir);
 
 
@@ -52,7 +52,7 @@ whichVGGHCLayersToUse = [10 17 31]; % [pool2, pool3, pool5] [128+256+512]=896 fe
 sameDiffSettings.examplesPerImage = 250;
 sameDiffSettings.examplesPerFile = 1000;
 sameDiffSettings.neighborhoodRadius = 30;
-sameDiffSettings.codeDir = 'C:/Users/christophermenart/Documents/cjmenart cv/Semantic Segmentation 2017/Semantic-Segmentation-Code-July-2017/';
+sameDiffSettings.codeDir = 'C:\Users\Christopher\Documents\Computer Vision Overflow\Semantic Segmentation Code July 2017/';
 sameDiffSettings.sameDiffDir = strcat(DatasetHomeDir,ModelSubDir,sprintf('SameDiffClassification_%04d/',desiredNumSP));
 sameDiffSettings.trainExampleDir = strcat(sameDiffSettings.sameDiffDir,'TrainingExamples/');
 sameDiffSettings.trainDataDir = strcat(sameDiffSettings.sameDiffDir,'Training Examples in CSV Format/');
@@ -62,7 +62,7 @@ sameDiffSettings.show = false;
 sameDiffSettings.valProp = 0.05;
 sameDiffSettings.spVersion = desiredNumSP;
 sameDiffSettings.split = 'train';
-sameDiffSettings.directToText = false;
+sameDiffSettings.directToText = true;
 %----------------------------------
 
 % Stage 7 settings

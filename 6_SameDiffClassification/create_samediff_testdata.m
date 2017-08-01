@@ -1,4 +1,4 @@
-function create_samediff_testdata(DatasetHomeDir,ModelSubDir,TestDataDir,sameDiffDir,spVersion,neighborhoodRadius)
+function create_samediff_testdata(DatasetHomeDir,ModelSubDir,settings)
 % Read up the hypercolumns, labelings and ground-truth segmentations for a
 % test dataset, and save out the pairwise examples needed to test the
 % classifier. We don't need to shuffle anything, so we're just going to
@@ -8,10 +8,7 @@ function create_samediff_testdata(DatasetHomeDir,ModelSubDir,TestDataDir,sameDif
 % this when reading the answers as well as writing data.
 
 %Settings
-if ~exist('neighborhoodRadius','var')
-    settings.neighborhoodRadius=1;
-end
-split = 'test';
+split = settings.split;
 ProbSubDir = strcat(ModelSubDir,'Prob/');
 HCDir = strcat(DatasetHomeDir, 'HC/');
 
@@ -57,7 +54,7 @@ for ImgNum = 1:numIms
     load(fname); %loads 'spHC'
         
     testingExamples = zeros(0,'single');
-    adjacencies = neighbors_from_segmentation(spIm{ImgNum},neighborhoodRadius);
+    adjacencies = neighbors_from_segmentation(spIm{ImgNum},settings.neighborhoodRadius);
     clear exampleIndices;
     [exampleIndices(:,1),exampleIndices(:,2)] = find(adjacencies);
     exampleIndices = sort(exampleIndices,2);
@@ -67,10 +64,10 @@ for ImgNum = 1:numIms
     testingExamples = horzcat(-1*ones(numExamples,1,'single'),spHC(:,exampleIndices(:,1))',...
         spHC(:,exampleIndices(:,2))');
     %mean-subtraction
-    testingExamples(:,2:end) = testingExamples(:,2:end) - repmat(meanVec,numExamples,1);
+    testingExamples(:,2:end) = testingExamples(:,2:end) - repmat(meanVec,numExamples,2);
     
     %save hypercolumns
-    fname = [TestDataDir 'samediff_testdat_' num2str(ImgNum,'%06d') '.csv'];
+    fname = [settings.testDataDir 'samediff_testdat_' num2str(ImgNum,'%06d') '.csv'];
     csvwrite(fname,testingExamples);
 end
     
