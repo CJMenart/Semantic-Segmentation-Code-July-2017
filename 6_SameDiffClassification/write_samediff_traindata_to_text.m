@@ -52,6 +52,7 @@ for ex = 1:numVal
 end
 
 shuffling = indices(randperm(rs,length(indices)));
+numExamples = length(shuffling);
 
 fnum = 0;
 for ex = 1:settings.examplesPerFile:numExamples

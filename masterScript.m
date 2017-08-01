@@ -52,7 +52,7 @@ whichVGGHCLayersToUse = [10 17 31]; % [pool2, pool3, pool5] [128+256+512]=896 fe
 sameDiffSettings.examplesPerImage = 250;
 sameDiffSettings.examplesPerFile = 1000;
 sameDiffSettings.neighborhoodRadius = 30;
-sameDiffSettings.codeDir = 'C:\Users\Christopher\Documents\Computer Vision Overflow\Semantic Segmentation Code July 2017/';
+sameDiffSettings.codeDir = 'C:/Users/christophermenart/Documents/cjmenart cv/Semantic Segmentation 2017/Semantic-Segmentation-Code-July-2017/';
 sameDiffSettings.sameDiffDir = strcat(DatasetHomeDir,ModelSubDir,sprintf('SameDiffClassification_%04d/',desiredNumSP));
 sameDiffSettings.trainExampleDir = strcat(sameDiffSettings.sameDiffDir,'TrainingExamples/');
 sameDiffSettings.trainDataDir = strcat(sameDiffSettings.sameDiffDir,'Training Examples in CSV Format/');
